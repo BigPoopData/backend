@@ -63,10 +63,12 @@ app.ws('/ws', function(ws, req) {
 app.get('/:klo/open/:status', function(req, res, next){
   let newEvent = {name: req.params.klo, timestamp: new Date(), open: req.params.status};
   console.log(newEvent.timestamp.toString() + " /" + req.params.klo + "/open/" + newEvent.open);
+
   if ((newEvent.open == "true") || (newEvent.open == "false")) { // Paranoid in the wrong places
     processToiletEvent(newEvent);
+
     connections.forEach(function(ws, index) {
-      if (ws.readyState == ws.OPEN){
+      if (ws.readyState == ws.OPEN){ //check if connection active
         ws.send(JSON.stringify(newEvent), function(err){
           if (err) console.log(err);
         });
@@ -75,6 +77,7 @@ app.get('/:klo/open/:status', function(req, res, next){
       }
     });
   }
+
   res.end();
 });
 

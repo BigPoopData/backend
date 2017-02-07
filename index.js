@@ -57,7 +57,6 @@ app.ws('/ws', function(ws, req) {
     handleWsMessage(msg, ws);
   });
   connections.push(ws)
-  console.log(ws);
   console.log("New Websocket Connection");
 });
 
@@ -66,11 +65,13 @@ app.get('/:klo/open/:status', function(req, res, next){
   console.log(newEvent.timestamp.toString() + " /" + req.params.klo + "/open/" + newEvent.open);
   if ((newEvent.open == "true") || (newEvent.open == "false")) { // Paranoid in the wrong places
     processToiletEvent(newEvent);
-    connections.forEach(function(ws) {
-      if(ws.readyState < 0) {
-        console.log("Error: Client no longer connected");
+    connections.forEach(function(ws, index) {
+      if (ws.readyState == ws.OPEN){
+        ws.send(JSON.stringify(newEvent), function(err){
+          if (err) console.log(err);
+        });
       } else {
-        ws.send(JSON.stringify(newEvent));
+        connections.splice(index, 1); //remove connection if no longer active
       }
     });
   }

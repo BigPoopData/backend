@@ -1,0 +1,17 @@
+{
+  "name": "BigPoopData_Backend",
+  "version": "0.5.0",
+  "description": "Backend for the Big Poop Data Website",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Max Wolschlager Copyright 2017",
+  "dependencies": {
+    "sqlite3": "^3.1.8",
+    "express": "^4.14.1",
+    "express-ws": "^2.0.0",
+    "body-parser": "^1.16.0"
+  }
+}

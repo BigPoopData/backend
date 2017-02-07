@@ -164,7 +164,6 @@
 
       // Computation Callback Chain
       compileDataForComputation(db, function(toilet) {
-        //console.log(toilet);
         computeClosedOpenRatio(toilet, function(closedOpenRatio){
           data.closedOpenRatio = closedOpenRatio;
           computeAverageClosedIntervalDurationPerDay(toilet, function(avgDursPerDay) {

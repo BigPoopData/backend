@@ -17,7 +17,6 @@ function handleWsMessage(msg, ws){
     case "setup":
       console.log("Sending Setup Object");
       cruncher.compileDataJson(db, function(dataString) {
-        console.log(dataString);
         ws.send(dataString);
       });
       break;

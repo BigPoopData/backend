@@ -35,7 +35,7 @@ function processToiletEvent(event) {
         db.run(`INSERT INTO sitzklo_open_intervals ([from], duration) VALUES($1, $2);`, [newInterval.from, newInterval.duration]);
         db.run(`INSERT INTO sitzklo_log (timestamp, open) VALUES($1, $2);`, [event.timestamp.toString().slice(0,24), event.open]);
         lastEvent = event;
-        console.log("Inserted Interval:" + newInterval);
+        console.log("Inserted Interval:" + JSON.stringify(newInterval));
       }
     } else if((lastEvent.open == "false" ) && (event.open != "false")) {
       if (1800 > newInterval.duration > 0){ // If Closed Interval longer than one 50 minutes, throw Interval away, nobody willl shit that long

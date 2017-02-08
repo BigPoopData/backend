@@ -133,12 +133,12 @@
           openIntervals: new Array(),
           closedIntervals: new Array(),
         }
-        db.each(`SELECT * FROM sitzklo_closed_intervals ORDER BY datetime("from");`, function(err, row) {
+        db.each(`SELECT * FROM sitzklo_closed_intervals ORDER BY datetime([from]);`, function(err, row) {
           row.from = new Date(Date.parse(row.from));
           toilet.closedIntervals.push(row);
         }, function (err, numRows) {
           if (err) console.log(err);
-          db.each(`SELECT * FROM sitzklo_open_intervals ORDER BY datetime("from");`, function(err, row) {
+          db.each(`SELECT * FROM sitzklo_open_intervals ORDER BY datetime([from]);`, function(err, row) {
             row.from = new Date(Date.parse(row.from));
             toilet.openIntervals.push(row);
           },function (err, numRows) {

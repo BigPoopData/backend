@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const ews = require('express-ws')(express());
 const app = ews.app;
+const path = require('path');
 
 const dc = require('./dataCruncher');
 const cruncher = new dc();
@@ -49,6 +50,9 @@ function processToiletEvent(event) {
     lastEvent = event;
   }
 }
+
+//Express
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 

@@ -40,17 +40,19 @@ this.send("setup", function() {
 getData.onmessage = function(msg) {
     dataset = JSON.parse(msg.data);
     var datasetObject = dataset.averageClosedDurationPerDay;
-    if (datasetObject.length > 1) {
+
+    if (averagesObject.length < 1) {
         for (var islol = 0; islol < datasetObject.length; islol++) {
             timestampsObject.push(datasetObject[islol].timestamp);
             averagesObject.push(Math.floor(datasetObject[islol].average / 60));
         }
     } else {
-        timestampsObject.push(datasetObject[datasetObject.length].timestamp);
-        averagesObject.push(Math.floor(datasetObject[datasetObject.length].average / 60));
+        timestampsObject.push(datasetObject[averagesObject.length].timestamp);
+        averagesObject.push(Math.floor(datasetObject[averagesObject.length].average / 60));
     }
 
     drawgraph1(averagesObject, timestampsObject);
+
     $(".se-pre-con").fadeOut("slow");
 };
 

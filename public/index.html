@@ -12,6 +12,7 @@
     <script src="http://code.jquery.com/jquery-3.1.1.min.js" charset="utf-8"></script>
     <script src="makegraph.js"></script>
     <script src="getdata.js"></script>
+    <script src="countup.js"></script>
 </head>
 
 <body>
@@ -54,10 +55,10 @@
                     Occupied
                 </h1>
                 <h2 class="subtitle colorwhite">
-                    Has been this way for: 2 Minutes and 30 Seconds
+                    Has been this way for about: <span id="minutes"></span><span id="seconds"></span>
                 </h2>
-                <h3 class="colorwhite">
-                    Stay patient! We know you can do it!
+                <h3 class="colorwhite" id="statusmessage">
+                    Give them some time, they just got in
                 </h3>
             </div>
         </div>

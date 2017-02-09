@@ -56,8 +56,6 @@ getData.onmessage = function(msg) {
         $('.statuscolor').css("background-color", opencolor + alphafull);
         currentcolor = opencolor + alphafull;
         currentcolorlessopacity = opencolor + alphadown;
-        console.log(currentcolor);
-
     }
 
     else{

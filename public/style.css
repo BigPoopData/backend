@@ -65,6 +65,8 @@ h1 {
 
 .statuscolor {
     background-color: white;
+    transition: all 0.5s ease;
+
 }
 
 .statussize h1 {
@@ -82,4 +84,9 @@ section {
 
 #average {
     height: 100%;
+}
+
+#statusmessage {
+    transition: all 0.5s ease;
+
 }

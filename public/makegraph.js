@@ -7,7 +7,7 @@ function drawgraph1(array, timestamp) {
                 type: 'line',
                 label: 'Average Time in Minutes',
                 data: array,
-                borderColor: "rgba(231, 76, 60,1.0)",
+                borderColor: currentcolor,
                 borderWidth: 1,
                 tension: 0.2,
 
@@ -15,7 +15,7 @@ function drawgraph1(array, timestamp) {
                 type: 'bar',
                 label: 'Bar Component',
                 data: array,
-                backgroundColor: "rgba(231, 76, 60,0.2)",
+                backgroundColor: currentcolorlessopacity,
 
 
             }
@@ -46,7 +46,6 @@ function drawgraph1(array, timestamp) {
                 }]
             },
             responsive: true,
-            maintainAspectRatio: true,
             legend: {
                 display: false,
             },

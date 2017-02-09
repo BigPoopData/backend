@@ -2,6 +2,14 @@ var dataset = [];
 var timestampsObject = [];
 var averagesObject = [];
 var currentstatus = false;
+var closedcolor = 'rgba(231, 76, 60, ';
+var opencolor = 'rgba(46, 204, 113, ';
+var currentcolor;
+var currentcolorlessopacity;
+var alphafull = '1.0)';
+var alphadown = '0.3)';
+
+
 
 var getData = new WebSocket("ws://metaklo.nico-rameder.at:8080/ws");
 
@@ -45,12 +53,18 @@ getData.onmessage = function(msg) {
 
     if(currentstatus){
         $('#status').text('Open');
-        $('.statuscolor').css("background-color", "rgba(46, 204, 113,1.0)");
+        $('.statuscolor').css("background-color", opencolor + alphafull);
+        currentcolor = opencolor + alphafull;
+        currentcolorlessopacity = opencolor + alphadown;
+        console.log(currentcolor);
+
     }
 
     else{
         $('#status').text('Occupied');
-        $('.statuscolor').css("background-color", "rgba(231, 76, 60,1.0)");
+        $('.statuscolor').css("background-color", closedcolor + alphafull);
+        currentcolor = closedcolor + alphafull;
+        currentcolorlessopacity = closedcolor + alphadown;
     }
 
     drawgraph1(averagesObject, timestampsObject);

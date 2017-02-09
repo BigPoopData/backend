@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Graphtest</title>
-    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/examples/justified-nav/justified-nav.css" rel="stylesheet">
+    <link href="bulma.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <script src="charts.min.js"></script>
     <script src="http://code.jquery.com/jquery-3.1.1.min.js" charset="utf-8"></script>
@@ -17,13 +16,74 @@
 
 <body>
     <div class="se-pre-con"></div>
-    <section id="status">
-    </section>
 
-    <section id="average">
-        <canvas id="canvas"></canvas>
+    <section class="hero is-fullheight statuscolor" id="header">
+        <!-- Hero header: will stick at the top -->
+        <div class="hero-head">
+            <header class="nav">
+                <div class="container">
+                    <div class="nav-left">
+                        <a class="nav-item">
+                            <img src="https://cdn.shopify.com/s/files/1/1061/1924/files/Poop_Emoji.png?9898922749706957214" alt="Logo">
+                            <div class="logo-text">Big Poop Data (.io)</div>
+                        </a>
+                    </div>
+                    <span class="nav-toggle">
+                      <span></span>
+                    <span></span>
+                    <span></span>
+                    </span>
+                    <div class="nav-right nav-menu">
+                        <a class="nav-item is-active colorwhite">
+                            Status
+                        </a>
+                        <a class="nav-item colorwhite">
+                            Graph1
+                          </a>
+                        <a class="nav-item colorwhite">
+                            Graph2
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 class="status colorwhite" id="status">
+                    Occupied
+                </h1>
+                <h2 class="subtitle colorwhite">
+                    Has been this way for: 2 Minutes and 30 Seconds
+                </h2>
+                <h3 class="colorwhite">
+                    Stay patient! We know you can do it!
+                </h3>
+            </div>
+        </div>
+
     </section>
-    test
+    <section id="average">
+        <div class="hero is-fullheight columns" id="main-content">
+            <div class="column">
+                <h1>Averagetest</h1> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+                esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </div>
+            <div class="column">
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
+    </section>
+    <section class="footer">
+        <div class="container">
+            <div class="content has-text-centered">
+                <p>
+                    <strong>Big Poop Data</strong> by <a href="">Big Poop Corp.</a>. The source code is licensed
+                    <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC ANS 4.0</a>.
+                </p>
+            </div>
+        </div>
+    </section>
 </body>
 
 </html>

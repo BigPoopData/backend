@@ -1,15 +1,7 @@
-// $.ajax({
-//     url: "192.168.0.219:8000/json.json",
-//     type:"POST",
-//     dataType: "JSON"
-// })
-// .done(function(data){
-//            console.log(JSON.parse(data.data));
-// });
-// console.log(JSON.parse(data.data));
 var dataset = [];
 var timestampsObject = [];
 var averagesObject = [];
+var currentstatus = false;
 
 var getData = new WebSocket("ws://metaklo.nico-rameder.at:8080/ws");
 
@@ -34,7 +26,7 @@ this.waitForConnection = function(callback, interval) {
 };
 
 this.send("setup", function() {
-    console.log('setup sent');
+    console.log('server is up');
 });
 
 getData.onmessage = function(msg) {
@@ -51,9 +43,20 @@ getData.onmessage = function(msg) {
         averagesObject.push(Math.floor(datasetObject[averagesObject.length].average / 60));
     }
 
+    if(currentstatus){
+        $('#status').text('Open');
+        $('.statuscolor').css("background-color", "rgba(46, 204, 113,1.0)");
+    }
+
+    else{
+        $('#status').text('Occupied');
+        $('.statuscolor').css("background-color", "rgba(231, 76, 60,1.0)");
+    }
+
     drawgraph1(averagesObject, timestampsObject);
 
     $(".se-pre-con").fadeOut("slow");
+    $('#main-content').fadeIn("slow");
 };
 
 window.onbeforeunload = function() {

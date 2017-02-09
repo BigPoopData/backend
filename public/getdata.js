@@ -1,7 +1,7 @@
 var dataset = [];
 var timestampsObject = [];
 var averagesObject = [];
-var currentstatus = false;
+var currentstatus = true;
 var closedcolor = 'rgba(231, 76, 60, ';
 var opencolor = 'rgba(46, 204, 113, ';
 var currentcolor;

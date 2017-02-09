@@ -57,13 +57,20 @@ div #main-content {
     color: white;
 }
 
+
 h1 {
-    font-size: 15vw;
+    font-size: 4.2em;
 }
+
 
 .statuscolor {
     background-color: white;
 }
+
+.statussize h1 {
+    font-size: 13vw;
+}
+
 
 .colorwhite {
     color: white !important;

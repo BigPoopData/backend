@@ -9,8 +9,6 @@ var currentcolorlessopacity;
 var alphafull = '1.0)';
 var alphadown = '0.3)';
 
-
-
 var getData = new WebSocket("ws://metaklo.nico-rameder.at:8080/ws");
 
 this.send = function(message, callback) {

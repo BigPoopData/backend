@@ -58,7 +58,6 @@ app.get('/:klo/open/:status', function(req, res, next){
     cruncher.processToiletEvent(newEvent, db);
     sendWsMessage(JSON.stringify(newEvent));
   }
-
   res.end();
 });
 

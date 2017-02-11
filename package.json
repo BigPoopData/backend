@@ -3,6 +3,7 @@
   "version": "0.5.0",
   "description": "Backend for the Big Poop Data Website",
   "main": "index.js",
+  "license": "CC ANS 4.0",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"

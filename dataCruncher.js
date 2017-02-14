@@ -196,28 +196,30 @@
 
     var processToiletEvent = function(event, db) {
       getLastEvent(db, function (lastEvent){
+        console.log(lastEvent);
         if (lastEvent.timestamp != null){
           let newInterval = {from: lastEvent.timestamp.toString().slice(0,24), duration: ((event.timestamp - lastEvent.timestamp) / 1000)}
-
+          console.log(event);
           if ((lastEvent.open == "true") && (event.open != "true")) {
+            db.run(`UPDATE sitzklo_current
+                    SET timestamp = $1, open = $2
+                    WHERE (id = 0)`, [event.timestamp.toString().slice(0,24), event.open]);
+            console.log("Updated Last Event");
             if ((60 * 60 * 24) > newInterval.duration > 0) { // If Open Interval longer than one day, throw Interval away
               db.run(`INSERT INTO sitzklo_open_intervals ([from], duration) VALUES($1, $2);`, [newInterval.from, newInterval.duration]);
               db.run(`INSERT INTO sitzklo_log (timestamp, open) VALUES($1, $2);`, [event.timestamp.toString().slice(0,24), event.open]);
               console.log("Inserted Interval:" + JSON.stringify(newInterval));
-              db.run(`UPDATE sitzklo_current
-                      SET timestamp = $1, open = $2
-                      WHERE (id = 0)`, [event.timestamp.toString().slice(0,24), event.open]);
-              console.log("Updated Last Event");    
+
             }
           } else if((lastEvent.open == "false" ) && (event.open != "false")) {
-            if (1800 > newInterval.duration > 0){ // If Closed Interval longer than one 50 minutes, throw Interval away, nobody willl shit that long
+            db.run(`UPDATE sitzklo_current
+                    SET timestamp = $1, open = $2
+                    WHERE (id = 0)`, [event.timestamp.toString().slice(0,24), event.open]);
+            console.log("Updated Last Event");
+            if (1800 > newInterval.duration > 0){ // If Closed Interval longer than one 50 minutes, throw Interval away, nobody will shit that long
               db.run(`INSERT INTO sitzklo_closed_intervals ([from], duration) VALUES($1, $2);`, [newInterval.from, newInterval.duration]);
               db.run(`INSERT INTO sitzklo_log (timestamp, open) VALUES($1, $2);`, [event.timestamp.toString().slice(0,24), event.open]);
               console.log("Inserted Interval:" + JSON.stringify(newInterval));
-              db.run(`UPDATE sitzklo_current
-                      SET timestamp = $1, open = $2
-                      WHERE (id = 0)`, [event.timestamp.toString().slice(0,24), event.open]);
-              console.log("Updated Last Event");
             }
           }
 

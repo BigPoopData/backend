@@ -55,6 +55,7 @@ app.get('/:klo/open/:status', function(req, res, next){
   console.log(newEvent.timestamp.toString() + " /" + req.params.klo + "/open/" + newEvent.open);
 
   if ((newEvent.open == "true") || (newEvent.open == "false")) { // Paranoid in the wrong places
+    console.log("Crunching Event");
     cruncher.processToiletEvent(newEvent, db);
     sendWsMessage(JSON.stringify(newEvent));
   }

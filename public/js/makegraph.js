@@ -16,10 +16,7 @@ function drawgraph1(array, timestamp) {
                 label: 'Bar Component',
                 data: array,
                 backgroundColor: currentcolorlessopacity,
-
-
             }
-            // data: array,}
         ]
 
     };

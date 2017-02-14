@@ -1,7 +1,11 @@
+var firsttime = true;
+
 var dataset = [];
 var timestampsObject = [];
 var averagesObject = [];
-var currentstatus = true;
+var datasetObject = [];
+var currentstatus;
+var waterusage = 2523;
 var closedcolor = 'rgba(231, 76, 60, ';
 var opencolor = 'rgba(46, 204, 113, ';
 var currentcolor;
@@ -10,6 +14,7 @@ var alphafull = '1.0)';
 var alphadown = '0.3)';
 
 var getData = new WebSocket("ws://metaklo.nico-rameder.at:8080/ws");
+
 
 this.send = function(message, callback) {
     this.waitForConnection(function() {
@@ -36,37 +41,50 @@ this.send("setup", function() {
 });
 
 getData.onmessage = function(msg) {
-    dataset = JSON.parse(msg.data);
-    var datasetObject = dataset.averageClosedDurationPerDay;
+    switch (firsttime) {
+        case true:
 
-    if (averagesObject.length < 1) {
-        for (var islol = 0; islol < datasetObject.length; islol++) {
-            timestampsObject.push(datasetObject[islol].timestamp);
-            averagesObject.push(Math.floor(datasetObject[islol].average / 60));
-        }
-    } else {
-        timestampsObject.push(datasetObject[averagesObject.length].timestamp);
-        averagesObject.push(Math.floor(datasetObject[averagesObject.length].average / 60));
+            dataset = JSON.parse(msg.data);
+            datasetObject = dataset.averageClosedDurationPerDay;
+            //if (averagesObject.length < 1) {
+            for (var islol = 0; islol < datasetObject.length; islol++) {
+                timestampsObject.push(datasetObject[islol].timestamp);
+                averagesObject.push(Math.floor(datasetObject[islol].average / 60));
+            }
+            //}
+            currentstatus = dataset.lastEvent.open;
+            console.log(currentstatus);
+            break;
+
+        case false:
+
+            currentstatus = JSON.parse(msg.data).open;
+            break;
     }
 
-    if(currentstatus){
-        $('#status').text('Open');
-        $('.statuscolor').css("background-color", opencolor + alphafull);
-        currentcolor = opencolor + alphafull;
-        currentcolorlessopacity = opencolor + alphadown;
-    }
-
-    else{
-        $('#status').text('Occupied');
-        $('.statuscolor').css("background-color", closedcolor + alphafull);
-        currentcolor = closedcolor + alphafull;
-        currentcolorlessopacity = closedcolor + alphadown;
+    switch (currentstatus) {
+        case "true":
+            $('#status').text('Open');
+            $('.statuscolor').css("background-color", opencolor + alphafull);
+            currentcolor = opencolor + alphafull;
+            currentcolorlessopacity = opencolor + alphadown;
+            break;
+        case "false":
+            $('#status').text('Occupied');
+            $('.statuscolor').css("background-color", closedcolor + alphafull);
+            currentcolor = closedcolor + alphafull;
+            currentcolorlessopacity = closedcolor + alphadown;
+            break;
     }
 
     drawgraph1(averagesObject, timestampsObject);
 
     $(".se-pre-con").fadeOut("slow");
     $('#main-content').fadeIn("slow");
+
+    firsttime = false;
+
+
 };
 
 window.onbeforeunload = function() {

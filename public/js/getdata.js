@@ -53,11 +53,12 @@ getData.onmessage = function(msg) {
             }
             //}
             currentstatus = dataset.lastEvent.open;
-            console.log(currentstatus);
+            console.log(dataset.lastEvent);
             break;
 
         case false:
             currentstatus = JSON.parse(msg.data).open;
+            console.log(msg.data);
             break;
     }
 

@@ -57,7 +57,6 @@ getData.onmessage = function(msg) {
             break;
 
         case false:
-
             currentstatus = JSON.parse(msg.data).open;
             break;
     }
@@ -68,12 +67,14 @@ getData.onmessage = function(msg) {
             $('.statuscolor').css("background-color", opencolor + alphafull);
             currentcolor = opencolor + alphafull;
             currentcolorlessopacity = opencolor + alphadown;
+            sec = 0;
             break;
         case "false":
             $('#status').text('Occupied');
             $('.statuscolor').css("background-color", closedcolor + alphafull);
             currentcolor = closedcolor + alphafull;
             currentcolorlessopacity = closedcolor + alphadown;
+            sec = 0;
             break;
     }
 

@@ -10,8 +10,8 @@ const express = require('express');
 const eps = express();
 const https = require('https');
 
-const keyPath = "/etc/letsencrypt/live/metaklo.nico-rameder.at/privkey.pem"; //'./../creds/key.pem';
-const certPath = "/etc/letsencrypt/live/metaklo.nico-rameder.at/cert.pem"; //'./../creds/cert.pem';
+const keyPath = './../creds/key.pem';
+const certPath = './../creds/cert.pem';
 
 const options = {
   key: fs.readFileSync(keyPath),

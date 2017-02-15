@@ -71,14 +71,14 @@ getData.onmessage = function(msg) {
 
     switch (currentstatus) {
         case "true":
-            $('#status').text('Open');
+            $('#status').text('open');
             $('.statuscolor').css("background-color", opencolor + alphafull);
             currentcolor = opencolor + alphafull;
             currentcolorlessopacity = opencolor + alphadown;
 
             break;
         case "false":
-            $('#status').text('Occupied');
+            $('#status').text('occupied');
             $('.statuscolor').css("background-color", closedcolor + alphafull);
             currentcolor = closedcolor + alphafull;
             currentcolorlessopacity = closedcolor + alphadown;

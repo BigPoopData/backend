@@ -1,0 +1,3 @@
+[submodule "BPD-Frontend"]
+	path = BPD-Frontend
+	url = git@ssh.gitgud.io:meksimus/BPD-Frontend.git

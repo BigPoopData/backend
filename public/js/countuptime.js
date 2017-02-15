@@ -1,19 +1,28 @@
-var sec = 0;
 var firstscroll = 0;
 // function pad(val) {
 //     return val > 9 ? val : "0" + val;
 // }
+var sec = 'getting data';
 
-function pad(val) {
+function setTimerDurationElapsed(timeintevalarg) {
+     sec = timeintevalarg;
+     console.log("sec changed --> " + sec);
+}
+    function pad(val) {
+
     return val;
 }
 
 
 setInterval(function() {
-    $("#seconds").html(pad(++sec % 60) + ' Seconds');
+    $("#seconds").html(++sec % 60 + ' Seconds');
     if (sec > 60) {
         $("#minutes").html(pad(parseInt(sec / 60, 10)) + ' Minutes and ');
     }
+    else{
+        $("#minutes").html('');
+    }
+
 
     switch (sec) {
         case 30:

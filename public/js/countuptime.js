@@ -6,6 +6,7 @@ var sec;
 
 function setTimerDurationElapsed(dateinterval) {
      sec = dateinterval;
+     console.log("sec changed" + sec);
 }
     function pad(val) {
 

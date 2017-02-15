@@ -64,8 +64,8 @@ getData.onmessage = function(msg) {
         case "sitzklo":
             currentstatus = JSON.parse(msg.data).open;
             console.log(msg.data);
-            setTimerDurationElapsed(0);
-
+            timedurationelapsed = 0;
+            setTimerDurationElapsed(timedurationelapsed);
             break;
     }
 

@@ -4,20 +4,19 @@ function drawgraph1(array, timestamp) {
         labels: timestamp,
         scaleShowVerticalLines: true,
         datasets: [{
-                type: 'line',
-                label: 'Average Time in Minutes',
-                data: array,
-                borderColor: currentcolor,
-                borderWidth: 1,
-                tension: 0.2,
-
-            }, {
-                type: 'bar',
-                label: 'Bar Component',
-                data: array,
-                backgroundColor: currentcolorlessopacity,
-            }
-        ]
+            // type: 'line',
+            // label: 'Average Time in Minutes',
+            // data: array,
+            // borderColor: currentcolor,
+            // borderWidth: 1,
+            // tension: 0.1,
+            //
+            // }, {
+            type: 'bar',
+            label: 'Bar Component',
+            data: array,
+            backgroundColor: currentcolorlessopacity,
+        }]
 
     };
 
@@ -32,6 +31,10 @@ function drawgraph1(array, timestamp) {
         options: {
             scales: {
                 xAxes: [{
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 20
+                    },
                     gridLines: {
                         display: false
                     }

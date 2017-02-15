@@ -1,10 +1,14 @@
-var sec = 0;
 var firstscroll = 0;
 // function pad(val) {
 //     return val > 9 ? val : "0" + val;
 // }
+var sec;
 
-function pad(val) {
+function setTimerDurationElapsed(dateinterval) {
+     sec = dateinterval;
+}
+    function pad(val) {
+
     return val;
 }
 

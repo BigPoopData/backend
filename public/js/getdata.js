@@ -1,5 +1,3 @@
-var firsttime = true;
-
 var dataset = [];
 var timestampsObject = [];
 var averagesObject = [];
@@ -12,6 +10,8 @@ var currentcolor;
 var currentcolorlessopacity;
 var alphafull = '1.0)';
 var alphadown = '0.3)';
+var datetimestamp = new Date();
+
 
 var getData = new WebSocket("ws://metaklo.nico-rameder.at:8080/ws");
 
@@ -41,24 +41,31 @@ this.send("setup", function() {
 });
 
 getData.onmessage = function(msg) {
-    switch (firsttime) {
-        case true:
-
-            dataset = JSON.parse(msg.data);
+    result = JSON.parse(msg.data);
+    switch (result.name) {
+        case "FullObject":
+            dataset = result;
             datasetObject = dataset.averageClosedDurationPerDay;
             //if (averagesObject.length < 1) {
-            for (var islol = 0; islol < datasetObject.length; islol++) {
-                timestampsObject.push(datasetObject[islol].timestamp);
-                averagesObject.push(Math.floor(datasetObject[islol].average / 60));
+            for (var j = 0; j < datasetObject.length; j++) {
+                timestampsObject.push(datasetObject[j].timestamp);
+                averagesObject.push(Math.floor((datasetObject[j].average / 60)* 100) / 100);
             }
             //}
             currentstatus = dataset.lastEvent.open;
-            console.log(dataset.lastEvent);
+            var daterightnow = new Date();
+            datetimestamp = Date.parse(dataset.lastEvent.timestamp);
+            var dateinterval = daterightnow - datetimestamp;
+            var timedurationelapsed = Math.floor(dateinterval/1000);
+            datetimestamp = Date.parse(dataset.lastEvent.timestamp);
+            setTimerDurationElapsed(timedurationelapsed);
             break;
 
-        case false:
+        case "sitzklo":
             currentstatus = JSON.parse(msg.data).open;
             console.log(msg.data);
+            setTimerDurationElapsed(0);
+
             break;
     }
 
@@ -68,15 +75,12 @@ getData.onmessage = function(msg) {
             $('.statuscolor').css("background-color", opencolor + alphafull);
             currentcolor = opencolor + alphafull;
             currentcolorlessopacity = opencolor + alphadown;
-            sec = 0;
             break;
         case "false":
             $('#status').text('Occupied');
             $('.statuscolor').css("background-color", closedcolor + alphafull);
             currentcolor = closedcolor + alphafull;
             currentcolorlessopacity = closedcolor + alphadown;
-            sec = 0;
-            break;
     }
 
     drawgraph1(averagesObject, timestampsObject);

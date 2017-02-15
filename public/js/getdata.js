@@ -57,17 +57,17 @@ getData.onmessage = function(msg) {
             datetimestamp = Date.parse(dataset.lastEvent.timestamp);
             var dateinterval = daterightnow - datetimestamp;
             var timedurationelapsed = Math.floor(dateinterval/1000);
-            datetimestamp = Date.parse(dataset.lastEvent.timestamp);
-            setTimerDurationElapsed(timedurationelapsed);
+            drawgraph1(averagesObject, timestampsObject);
             break;
 
         case "sitzklo":
             currentstatus = JSON.parse(msg.data).open;
             console.log(msg.data);
             timedurationelapsed = 0;
-            setTimerDurationElapsed(timedurationelapsed);
             break;
     }
+
+    setTimerDurationElapsed(timedurationelapsed);
 
     switch (currentstatus) {
         case "true":
@@ -75,6 +75,7 @@ getData.onmessage = function(msg) {
             $('.statuscolor').css("background-color", opencolor + alphafull);
             currentcolor = opencolor + alphafull;
             currentcolorlessopacity = opencolor + alphadown;
+
             break;
         case "false":
             $('#status').text('Occupied');
@@ -83,13 +84,9 @@ getData.onmessage = function(msg) {
             currentcolorlessopacity = closedcolor + alphadown;
     }
 
-    drawgraph1(averagesObject, timestampsObject);
 
     $(".se-pre-con").fadeOut("slow");
     $('#main-content').fadeIn("slow");
-
-    firsttime = false;
-
 
 };
 

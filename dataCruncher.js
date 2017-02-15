@@ -438,9 +438,9 @@
         averageClosedDurationPerDay: null,
         averageClosedDurationPerHour: null,
         averageClosedDurationPerWeekday: null,
-        totalIntervals: null, // TODO
-        averageIntervalsPerHour: null, //TODO
-        averageIntervalsPerWeekday: null, //TODO
+        totalIntervals: null,
+        averageIntervalsPerHour: null,
+        averageIntervalsPerWeekday: null,
         bigSmallRatio: null, //TODO
         estimatedWaterUsage: null, //TODO
       }

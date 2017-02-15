@@ -7,6 +7,7 @@ function drawgraph1(array, timestamp) {
             // type: 'line',
             // label: 'Average Time in Minutes',
             // data: array,
+            // showLine: false,
             // borderColor: currentcolor,
             // borderWidth: 1,
             // tension: 0.1,
@@ -15,7 +16,7 @@ function drawgraph1(array, timestamp) {
             type: 'bar',
             label: 'Bar Component',
             data: array,
-            backgroundColor: currentcolorlessopacity,
+            backgroundColor: currentcolor,
         }]
 
     };
@@ -31,6 +32,19 @@ function drawgraph1(array, timestamp) {
         options: {
             scales: {
                 xAxes: [{
+
+                    afterTickToLabelConversion: function(data){
+
+
+                   var xLabels = data.ticks;
+
+                   xLabels.forEach(function (labels, i) {
+                       if (i % 2 == 1){
+                           xLabels[i] = '';
+                       }
+                   });},
+
+
                     ticks: {
                         autoSkip: true,
                         maxTicksLimit: 20
@@ -38,6 +52,7 @@ function drawgraph1(array, timestamp) {
                     gridLines: {
                         display: false
                     }
+
                 }],
                 yAxes: [{
                     gridLines: {

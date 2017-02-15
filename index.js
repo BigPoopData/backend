@@ -1,14 +1,30 @@
-const express = require('express');
+//Misc
 const bodyParser = require('body-parser');
-const ews = require('express-ws')(express());
-const app = ews.app;
 const path = require('path');
-
-const dc = require('./dataCruncher');
-const cruncher = new dc();
-
+const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./toilet.db');
+
+//Express/WS/HTTPS
+const express = require('express');
+const eps = express();
+const https = require('https');
+
+const keyPath = "/etc/letsencrypt/live/metaklo.nico-rameder.at/privkey.pem"; //'./../creds/key.pem';
+const certPath = "/etc/letsencrypt/live/metaklo.nico-rameder.at/cert.pem"; //'./../creds/cert.pem';
+
+const options = {
+  key: fs.readFileSync(keyPath),
+  cert: fs.readFileSync(certPath)
+}
+
+const server = https.createServer(options, eps).listen(8000);
+const ews = require('express-ws')(eps, server);
+const app = ews.app;
+
+//Cruncher
+const dc = require('./dataCruncher');
+const cruncher = new dc();
 
 var connections = new Array();
 
@@ -61,6 +77,7 @@ app.get('/:klo/open/:status', function(req, res, next){
   }
   res.end();
 });
+
 
 app.listen(process.env.PORT || 8080, () => {
   console.log('---- Backend Started ----');

@@ -7,6 +7,44 @@
 
 (function() {
 
+  var computeAverageClosedIntervalDurationPerMonth = function(toilet, cb) {
+    let closedIntervals = toilet.closedIntervals;
+    let stamps = toilet.distinctMonths;
+    let averageClosedIntervalsPerMonth = new Array();
+
+    for (var i = 0; i < stamps.length; i++) // set up array to be filled
+      averageClosedIntervalsPerMonth.push({timestamp: null, average: 0, intervals: 0});
+
+    for(i = 0; i < closedIntervals.length; i++) {
+      let dateArray = closedIntervals[i].from.toDateString().split(" ");
+      let month = dateArray[1] + " " + dateArray[3];
+
+      for(j = 0; j < stamps.length; j++) {
+        if (stamps[j] == month) {
+          averageClosedIntervalsPerMonth[j].timestamp = stamps[j];
+          averageClosedIntervalsPerMonth[j].average += closedIntervals[i].duration;
+          averageClosedIntervalsPerMonth[j].intervals ++;
+        }
+      }
+    }
+    for(i = 0; i < averageClosedIntervalsPerMonth.length; i++) {
+      let average = averageClosedIntervalsPerMonth[i].average / averageClosedIntervalsPerMonth[i].intervals;
+      averageClosedIntervalsPerMonth[i].average = average;
+    }
+    cb(averageClosedIntervalsPerMonth);
+  }
+
+  var computeDistinctMonths = function(data, cb) {
+    let stamps = new Array();
+    for(i = 0; i < data.length; i++) {
+      let date = new Date(Date.parse(data[i].timestamp))
+      let dateArray = date.toDateString().split(" ")
+      stamps.push(dateArray[1] + " " + dateArray[3]);
+    }
+    stamps = stamps.filter(onlyUnique);
+    cb(stamps);
+  }
+
   var getLastEvent = function(db, cb) {
     db.get(`SELECT * FROM sitzklo_current;`, function(err, lastDbEvent) {
       if (err) console.log(err);
@@ -169,6 +207,7 @@
           openIntervals: new Array(),
           closedIntervals: new Array(),
           distinctDays: new Array(),
+          distinctMonths: new Array()
         }
         db.each(`SELECT * FROM sitzklo_closed_intervals ORDER BY datetime([from]);`, function(err, row) {
           row.from = new Date(Date.parse(row.from));
@@ -180,9 +219,12 @@
             toilet.openIntervals.push(row);
           },function (err, numRows) {
             if (err) console.log(err);
-            computeDistinctDays(toilet.toiletEvents, function(days){
+            computeDistinctDays(toilet.toiletEvents, function(days) {
               toilet.distinctDays = days;
-              cb(toilet);
+              computeDistinctMonths(toilet.toiletEvents, function (months) {
+                toilet.distinctMonths = months;
+                cb(toilet);
+              })
             });
           });
         });
@@ -197,6 +239,7 @@
         averageClosedDurationPerDay: null,
         averageClosedDurationPerHour: null,
         averageClosedDurationPerWeekday: null,
+        averageClosedDurationPerMonth: null,
         totalIntervals: null,
         averageIntervalsPerHour: null,
         averageIntervalsPerWeekday: null,
@@ -208,7 +251,7 @@
       compileDataForComputation(db, function(toilet) {
         getLastEvent(db, function(lastDbEvent) {
           data.lastEvent = lastDbEvent;
-          computeClosedOpenRatio(toilet, function(closedOpenRatio){
+          computeClosedOpenRatio(toilet, function(closedOpenRatio) {
             data.closedOpenRatio = closedOpenRatio;
             computeAverageClosedIntervalDurationPerDay(toilet, function(avgDursPerDay) {
               data.averageClosedDurationPerDay = avgDursPerDay;
@@ -216,12 +259,15 @@
                 data.averageClosedDurationPerHour = avgDursPerHour;
                 computeAverageClosedIntervalDurationPerWeekday(toilet, function(avgDursPerWeekday) {
                   data.averageClosedDurationPerWeekday = avgDursPerWeekday;
-                  computeIntervalÁnalytics(toilet, function(totalIntervals, averageIntervalsPerHour, averageIntervalsPerWeekday) {
-                    data.totalIntervals = totalIntervals;
-                    data.averageIntervalsPerHour = averageIntervalsPerHour;
-                    data.averageIntervalsPerWeekday = averageIntervalsPerWeekday;
-                    cb(JSON.stringify(data));
-                  })
+                  computeAverageClosedIntervalDurationPerMonth(toilet, function(avgDursPerMonth) {
+                    data.averageClosedDurationPerMonth = avgDursPerMonth;
+                    computeIntervalÁnalytics(toilet, function(totalIntervals, averageIntervalsPerHour, averageIntervalsPerWeekday) {
+                      data.totalIntervals = totalIntervals;
+                      data.averageIntervalsPerHour = averageIntervalsPerHour;
+                      data.averageIntervalsPerWeekday = averageIntervalsPerWeekday;
+                      cb(JSON.stringify(data));
+                    });
+                  });
                 });
               });
             });

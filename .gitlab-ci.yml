@@ -1,0 +1,10 @@
+test:
+  script:
+  - npm install
+
+staging:
+  type: deploy
+  script:
+  -
+  only:
+  - master

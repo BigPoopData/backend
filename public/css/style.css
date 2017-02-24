@@ -58,7 +58,14 @@ div #main-content {
 #logo {
     background-image: url('../img/logo.svg');
     background-size: contain;
+    background-position: center;
     background-repeat: no-repeat;
+    width: 20vw;
+    height: 5vh;
+}
+
+.nav-toggle span {
+    background-color: #FFF;
 }
 
 .logo-text {
@@ -83,6 +90,10 @@ h2 {
     font-size: 4vw;
 }
 
+#intervalstest {
+    font-size: 4vw;
+}
+
 .statuscolor {
     background-color: white;
     transition: all 0.5s ease;
@@ -103,8 +114,7 @@ section {
 
 #average {
     width: 100%;
-    /*min-height: 100%;*/
-
+    min-height: 100%;
 }
 
 #statusmessage {
@@ -112,12 +122,22 @@ section {
 }
 
 #watersavings {
-    text-align: center;
-    min-height: 80vh;
-    background-image: url('../img/bg1.jpg');
-    background-position: bottom;
-    background-size: cover;
-    
+    text-align: left;
+    background-color: #AEF3FC;
+    /*background-image: url('../img/bg1.jpg');*/
+    background-image: url('../img/bathroom.svg');
+    background-position: 75%;
+
+    background-size: 80vh;
+    background-repeat: no-repeat;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    color: white;
+
+}
+
+#watersavings h1 {
+    padding-top: 35vh;
 }
 
 .statusmessage {
@@ -157,7 +177,7 @@ section {
 
 .chartWrapper {
     box-sizing: border-box;
-    height: 20vh;
+    height: 100vh;
     width: 35vw;
     /*border: 1px black solid;*/
     overflow-y: hidden;
@@ -167,10 +187,22 @@ section {
 .chartWrapper::-webkit-scrollbar {
     display: none;
 }
-.chartWrapper > div {
+
+.chartWrapper>div {
     width: 5000px;
     max-height: 100%;
-     }
+}
 
-#watersavings {
+.underline {
+    width: 50%;
+    height: 4px;
+    margin-top: -1%;
+}
+
+#intervals {
+    min-height: 100%;
+}
+
+section {
+    min-height: 100%;
 }

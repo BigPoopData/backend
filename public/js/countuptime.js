@@ -36,7 +36,6 @@ setInterval(function() {
         $("#hours").html('');
     }
 
-
     if (currentstatus) {
         switch (true) {
             case (sec < 30):
@@ -87,6 +86,33 @@ function water() {
 
 $(document).ready(function() {
 
+  window.sr = ScrollReveal().reveal('.revealonscroll, .averagesreveal, .intervalsreveal, .closedopenreveal',
+  { viewOffset: { top: -100, right: 0, bottom: -100, left: 0,},
+  });
+
+  sr.reveal('.revealonscroll', {
+    duration: 500,
+    reset: true,
+  });
+
+  sr.reveal('.averagesreveal', {
+    duration: 500,
+    reset: true,
+  }, 100);
+
+  sr.reveal('.intervalsreveal', {
+    duration: 500,
+    reset: true,
+  }, 100);
+
+  sr.reveal('.closedopenreveal', {
+    duration: 500,
+    reset: true,
+  }, 200);
+
+
+
+
     var waypoint = new Waypoint({
         element: document.getElementById('watersavings'),
         handler: function(direction) {
@@ -98,7 +124,3 @@ $(document).ready(function() {
         offset: '50%',
     });
 });
-
-window.sr = ScrollReveal({ reset: true });
-
-sr.reveal('.foo', { duration: 200 });

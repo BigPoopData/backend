@@ -6,6 +6,33 @@
 */
 
 (function() {
+  const spuelkastenVolume = 9; //Litres: (pi*4.5²)/2 + 31*4.5 + 7.5*40
+  const intervalsPerToiletPaper = 71.48; //http://encyclopedia.toiletpaperworld.com/surveys-stories/toilet-paper-statistics
+  const rollsPerTree =  810; //http://www.toiletpaperhistory.net/toilet-paper-facts/toilet-paper-fun-facts/
+
+  var computeRollAndTreeUsage = function(toilet, cb) {
+    let estimatedRollUsage = {value: null, calculation: null}
+    let estimatedTreeMurder = {value: null, calculation: null}
+    let closedIntervalQuant = toilet.closedIntervals.length;
+
+    estimatedRollUsage.value = closedIntervalQuant / intervalsPerToiletPaper;
+    estimatedRollUsage.calculation = `${closedIntervalQuant} / ${intervalsPerToiletPaper} =`;
+
+    estimatedTreeMurder.value = estimatedRollUsage.value / rollsPerTree;
+    estimatedTreeMurder.calculation = `${closedIntervalQuant} / ${rollsPerTree} =`;
+
+    cb(estimatedRollUsage, estimatedTreeMurder);
+  }
+
+  var computeEstimatedWaterUsage = function(toilet, cb) {
+    let estimatedWaterUsage = {value: null, calculation: null}
+    let closedIntervalQuant = toilet.closedIntervals.length;
+
+    estimatedWaterUsage.value = closedIntervalQuant * spuelkastenVolume;
+    estimatedWaterUsage.calculation = `${closedIntervalQuant} * ${spuelkastenVolume} =`;
+
+    cb(estimatedWaterUsage);
+  }
 
   var computeAverageClosedIntervalDurationPerMonth = function(toilet, cb) {
     let closedIntervals = toilet.closedIntervals;
@@ -245,6 +272,8 @@
         averageIntervalsPerWeekday: null,
         bigSmallRatio: null, //TODO
         estimatedWaterUsage: null, //TODO
+        estimatedRollsOfToiletpaperUsed: null,
+        estimatedTreesKilled: null,
       }
 
       // Computation Callback Chain
@@ -265,7 +294,14 @@
                       data.totalIntervals = totalIntervals;
                       data.averageIntervalsPerHour = averageIntervalsPerHour;
                       data.averageIntervalsPerWeekday = averageIntervalsPerWeekday;
-                      cb(JSON.stringify(data));
+                      computeEstimatedWaterUsage(toilet, function(estWasterUsg) {
+                        data.estimatedWaterUsage = estWasterUsg;
+                        computeRollAndTreeUsage(toilet, function(estimatedRollUsage, estimatedTreeMurder) {
+                          data.estimatedRollsOfToiletpaperUsed = estimatedRollUsage;
+                          data.estimatedTreesKilled = estimatedTreeMurder;
+                          cb(JSON.stringify(data));
+                        });
+                      });
                     });
                   });
                 });

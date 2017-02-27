@@ -19,7 +19,7 @@
     estimatedRollUsage.calculation = `${closedIntervalQuant} / ${intervalsPerToiletPaper} =`;
 
     estimatedTreeMurder.value = estimatedRollUsage.value / rollsPerTree;
-    estimatedTreeMurder.calculation = `${closedIntervalQuant} / ${rollsPerTree} =`;
+    estimatedTreeMurder.calculation = `${estimatedRollUsage.value} / ${rollsPerTree} =`;
 
     cb(estimatedRollUsage, estimatedTreeMurder);
   }

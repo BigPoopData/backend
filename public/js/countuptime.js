@@ -58,10 +58,10 @@ setInterval(function() {
             case (sec < 30):
                 $("#statusmessage").html('"This could take longer..."');
                 break;
-                case (sec < 120):
+            case (sec < 120):
                 $("#statusmessage").html('Stay patient! We know you can do it!');
                 break;
-                case (sec < 500):
+            case (sec < 500):
                 $("#statusmessage").html('Really taking his/her time!');
                 break;
 
@@ -86,41 +86,25 @@ function water() {
 
 $(document).ready(function() {
 
-  window.sr = ScrollReveal().reveal('.revealonscroll, .averagesreveal, .intervalsreveal, .closedopenreveal',
-  { viewOffset: { top: -100, right: 0, bottom: -100, left: 0,},
-  });
-
-  sr.reveal('.revealonscroll', {
-    duration: 500,
-    reset: true,
-  });
-
-  sr.reveal('.averagesreveal', {
-    duration: 500,
-    reset: true,
-  }, 100);
-
-  sr.reveal('.intervalsreveal', {
-    duration: 500,
-    reset: true,
-  }, 100);
-
-  sr.reveal('.closedopenreveal', {
-    duration: 500,
-    reset: true,
-  }, 200);
-
-
-
-
-    var waypoint = new Waypoint({
-        element: document.getElementById('watersavings'),
-        handler: function(direction) {
-            if (direction === 'down' && firstscroll === 0) {
-                water();
-                firstscroll++;
-            }
+    var sroptions = {
+        duration: 500,
+        reset: true,
+        viewOffset: {
+            top: -100,
+            right: 0,
+            bottom: -100,
+            left: 0,
         },
-        offset: '50%',
-    });
+    };
+
+    window.sr = ScrollReveal().reveal();
+
+    sr.reveal('.revealonscroll', sroptions);
+
+    sr.reveal('.averagesreveal', sroptions, 100);
+
+    sr.reveal('.intervalsreveal', sroptions, 100);
+
+    sr.reveal('.closedopenreveal', sroptions, 200);
+
 });

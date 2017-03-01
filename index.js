@@ -41,7 +41,7 @@ function handleWsMessage(msg, ws){
   }
 }
 
-function sendWsMessage(msg) {
+function broadcastWsMessage(msg) {
   connections.forEach(function(ws, index) {
     if (ws.readyState == ws.OPEN){ //check if connection active
       ws.send(msg, function(err){
@@ -73,7 +73,7 @@ app.get('/:klo/open/:status', function(req, res, next){
   if ((newEvent.open == "true") || (newEvent.open == "false")) { // Paranoid in the wrong places
     console.log("Crunching Event");
     cruncher.processToiletEvent(newEvent, db);
-    sendWsMessage(JSON.stringify(newEvent));
+    broadcastWsMessage(JSON.stringify(newEvent));
   }
   res.end();
 });

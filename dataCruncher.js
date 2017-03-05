@@ -6,32 +6,99 @@
 */
 
 (function() {
-  const spuelkastenVolume = 9; //Litres: (pi*4.5²)/2 + 31*4.5 + 7.5*40
-  const intervalsPerToiletPaper = 71.48; //http://encyclopedia.toiletpaperworld.com/surveys-stories/toilet-paper-statistics
-  const rollsPerTree =  810; //http://www.toiletpaperhistory.net/toilet-paper-facts/toilet-paper-fun-facts/
 
-  var computeRollAndTreeUsage = function(toilet, cb) {
-    let estimatedRollUsage = {value: null, calculation: null}
-    let estimatedTreeMurder = {value: null, calculation: null}
-    let closedIntervalQuant = toilet.closedIntervals.length;
 
-    estimatedRollUsage.value = closedIntervalQuant / intervalsPerToiletPaper;
-    estimatedRollUsage.calculation = `${closedIntervalQuant} / ${intervalsPerToiletPaper} =`;
+      var legacyComputationCallbackChain = function(db, data, cb) {
 
-    estimatedTreeMurder.value = estimatedRollUsage.value / rollsPerTree;
-    estimatedTreeMurder.calculation = `${estimatedRollUsage.value} / ${rollsPerTree} =`;
+        compileDataForComputation(db, function(toilet) {
+          getLastEvent(db, function(lastDbEvent) {
+            data.lastEvent = lastDbEvent;
+            computeClosedOpenRatio(toilet, function(closedOpenRatio) {
+              data.closedOpenRatio = closedOpenRatio;
+              computeAverageClosedIntervalDurationPerDay(toilet, function(avgDursPerDay) {
+                data.averageClosedDurationPerDay = avgDursPerDay;
+                computeAverageClosedIntervalDurationPerHour(toilet, function(avgDursPerHour) {
+                  data.averageClosedDurationPerHour = avgDursPerHour;
+                  computeAverageClosedIntervalDurationPerWeekday(toilet, function(avgDursPerWeekday) {
+                    data.averageClosedDurationPerWeekday = avgDursPerWeekday;
+                    computeAverageClosedIntervalDurationPerMonth(toilet, function(avgDursPerMonth) {
+                      data.averageClosedDurationPerMonth = avgDursPerMonth;
+                      computeIntervalÁnalytics(toilet, function(totalIntervals, averageIntervalsPerHour, averageIntervalsPerWeekday) {
+                        data.totalIntervals = totalIntervals;
+                        data.averageIntervalsPerHour = averageIntervalsPerHour;
+                        data.averageIntervalsPerWeekday = averageIntervalsPerWeekday;
+                        computeEstimatedWaterUsage(toilet, function(estWasterUsg) {
+                          data.estimatedWaterUsage = estWasterUsg;
+                          computeRollAndTreeUsage(toilet, function(estimatedRollUsage, estimatedTreeMurder) {
+                            data.estimatedRollsOfToiletpaperUsed = estimatedRollUsage;
+                            data.estimatedTreesKilled = estimatedTreeMurder;
+                            cb(data);
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      }
 
-    cb(estimatedRollUsage, estimatedTreeMurder);
+  var computeAverageClosedIntervalDurationPerDay = function(toilet, cb) {
+    let closedIntervals = toilet.closedIntervals;
+    let stamps = toilet.distinctDays;
+    let averageClosedIntervalsPerDay = new Array();
+
+    for (var i = 0; i < stamps.length; i++) // set up array to be filled
+      averageClosedIntervalsPerDay.push({timestamp: null, average: 0, intervals: 0});
+
+    for(i = 0; i < closedIntervals.length; i++) {
+      for(j = 0; j < stamps.length; j++) {
+        if (stamps[j] == closedIntervals[i].from.toDateString()) {
+          averageClosedIntervalsPerDay[j].timestamp = stamps[j];
+          averageClosedIntervalsPerDay[j].average += closedIntervals[i].duration;
+          averageClosedIntervalsPerDay[j].intervals ++;
+        }
+      }
+    }
+    for(i = 0; i < averageClosedIntervalsPerDay.length; i++) {
+      let average = averageClosedIntervalsPerDay[i].average / averageClosedIntervalsPerDay[i].intervals;
+      averageClosedIntervalsPerDay[i].average = average;
+    }
+    cb(averageClosedIntervalsPerDay);
   }
 
-  var computeEstimatedWaterUsage = function(toilet, cb) {
-    let estimatedWaterUsage = {value: null, calculation: null}
-    let closedIntervalQuant = toilet.closedIntervals.length;
+  var computeAverageClosedIntervalDurationPerWeekday = function(toilet, cb) {
+    let closedIntervals = toilet.closedIntervals;
+    let averageClosedIntervalsPerWeekday = new Array();
+    for (var i = 0; i < 7; i++) // set up array to be filled (7 Weekdays)
+      averageClosedIntervalsPerWeekday.push({average: 0, intervals: 0});
 
-    estimatedWaterUsage.value = closedIntervalQuant * spuelkastenVolume;
-    estimatedWaterUsage.calculation = `${closedIntervalQuant} * ${spuelkastenVolume} =`;
+    closedIntervals.forEach(function (item) { // 0: Sunday, 1: Monday, 2: Tuesday...
+      averageClosedIntervalsPerWeekday[item.from.getDay()].average += item.duration;
+      averageClosedIntervalsPerWeekday[item.from.getDay()].intervals ++;
+    });
+    averageClosedIntervalsPerWeekday.forEach(function (item) {
+      item.average = item.average / item.intervals;
+    });
+    cb(averageClosedIntervalsPerWeekday);
+  }
 
-    cb(estimatedWaterUsage);
+  var computeAverageClosedIntervalDurationPerHour = function(toilet, cb) {
+    let closedIntervals = toilet.closedIntervals;
+    let averageClosedIntervalsPerHour = new Array();
+    for (var i = 0; i < 24; i++) // set up array to be filled
+      averageClosedIntervalsPerHour.push({average: 0, intervals: 0});
+
+    closedIntervals.forEach(function (item) {
+      averageClosedIntervalsPerHour[item.from.getHours()].average += item.duration;
+      averageClosedIntervalsPerHour[item.from.getHours()].intervals ++;
+    });
+    averageClosedIntervalsPerHour.forEach(function (item) {
+      item.average = item.average / item.intervals;
+    });
+    cb(averageClosedIntervalsPerHour);
   }
 
   var computeAverageClosedIntervalDurationPerMonth = function(toilet, cb) {
@@ -59,17 +126,6 @@
       averageClosedIntervalsPerMonth[i].average = average;
     }
     cb(averageClosedIntervalsPerMonth);
-  }
-
-  var computeDistinctMonths = function(data, cb) {
-    let stamps = new Array();
-    for(i = 0; i < data.length; i++) {
-      let date = new Date(Date.parse(data[i].timestamp))
-      let dateArray = date.toDateString().split(" ")
-      stamps.push(dateArray[1] + " " + dateArray[3]);
-    }
-    stamps = stamps.filter(onlyUnique);
-    cb(stamps);
   }
 
   var getLastEvent = function(db, cb) {
@@ -109,53 +165,185 @@
     cb(totalIntervals, averageIntervalsPerHour, averageIntervalsPerWeekday);
   }
 
-  var computeAverageClosedIntervalDurationPerWeekday = function(toilet, cb) {
-    let closedIntervals = toilet.closedIntervals;
-    let averageClosedIntervalsPerWeekday = new Array();
-    for (var i = 0; i < 7; i++) // set up array to be filled (7 Weekdays)
-      averageClosedIntervalsPerWeekday.push({average: 0, intervals: 0});
+  //legacy ^
 
-    closedIntervals.forEach(function (item) { // 0: Sunday, 1: Monday, 2: Tuesday...
-      averageClosedIntervalsPerWeekday[item.from.getDay()].average += item.duration;
-      averageClosedIntervalsPerWeekday[item.from.getDay()].intervals ++;
-    });
-    averageClosedIntervalsPerWeekday.forEach(function (item) {
-      item.average = item.average / item.intervals;
-    });
-    cb(averageClosedIntervalsPerWeekday);
+
+
+  const spuelkastenVolume = 9; //Litres: (pi*4.5²)/2 + 31*4.5 + 7.5*40
+  const intervalsPerToiletPaper = 71.48; //http://encyclopedia.toiletpaperworld.com/surveys-stories/toilet-paper-statistics
+  const rollsPerTree =  810; //http://www.toiletpaperhistory.net/toilet-paper-facts/toilet-paper-fun-facts/
+
+  var computeRollAndTreeUsage = function(toilet, cb) {
+    let estimatedRollUsage = {value: null, calculation: null}
+    let estimatedTreeMurder = {value: null, calculation: null}
+    let closedIntervalQuant = toilet.closedIntervals.length;
+
+    estimatedRollUsage.value = closedIntervalQuant / intervalsPerToiletPaper;
+    estimatedRollUsage.calculation = `${closedIntervalQuant} / ${intervalsPerToiletPaper} =`;
+
+    estimatedTreeMurder.value = estimatedRollUsage.value / rollsPerTree;
+    estimatedTreeMurder.calculation = `${estimatedRollUsage.value} / ${rollsPerTree} =`;
+
+    cb(estimatedRollUsage, estimatedTreeMurder);
   }
 
-  var computeAverageClosedIntervalDurationPerHour = function(toilet, cb) {
-    let closedIntervals = toilet.closedIntervals;
-    let averageClosedIntervalsPerHour = new Array();
-    for (var i = 0; i < 24; i++) // set up array to be filled
-      averageClosedIntervalsPerHour.push({average: 0, intervals: 0});
+  var computeEstimatedWaterUsage = function(toilet, cb) {
+    let estimatedWaterUsage = {value: null, calculation: null}
+    let closedIntervalQuant = toilet.closedIntervals.length;
 
-    closedIntervals.forEach(function (item) {
-      averageClosedIntervalsPerHour[item.from.getHours()].average += item.duration;
-      averageClosedIntervalsPerHour[item.from.getHours()].intervals ++;
-    });
-    averageClosedIntervalsPerHour.forEach(function (item) {
-      item.average = item.average / item.intervals;
-    });
-    cb(averageClosedIntervalsPerHour);
+    estimatedWaterUsage.value = closedIntervalQuant * spuelkastenVolume;
+    estimatedWaterUsage.calculation = `${closedIntervalQuant} * ${spuelkastenVolume} =`;
+
+    cb(estimatedWaterUsage);
   }
 
-    var computeClosedOpenRatio = function(toilet, cb){
-      let open = toilet.openIntervals;
-      let closed = toilet.closedIntervals;
-      let totalOpen = 0;
-      let totalClosed = 0;
+  var computeUsagePerWeekday = function(toilet, cb) {
+    let closedIntervals = toilet.closedIntervals;
+    let usagePerWeekday = new Array();
+
+    for (var i = 0; i < 7; i++){ // set up array to be filled
+      usagePerWeekday.push({
+        average: 0,
+        min: 1023,
+        max: 0,
+        intervals: 0
+      });
+    }
+
+    closedIntervals.forEach(function (interval) {
+      usagePerWeekday[interval.from.getDay()].average += interval.duration;
+      usagePerWeekday[interval.from.getDay()].intervals ++;
+      if (interval.duration > usagePerWeekday[interval.from.getDay()].max) {
+        usagePerWeekday[interval.from.getDay()].max = interval.duration
+      }
+      if (interval.duration < usagePerWeekday[interval.from.getDay()].min) {
+        usagePerWeekday[interval.from.getDay()].min = interval.duration
+      }
+    });
+
+    usagePerWeekday.forEach(function (weekday) {
+      weekday.average = weekday.average / weekday.intervals;
+    });
+
+    cb(usagePerWeekday);
+  }
+
+  var computeUsagePerHour = function(toilet, cb) {
+    let closedIntervals = toilet.closedIntervals;
+    let usagePerHour = new Array();
+
+    for (var i = 0; i < 24; i++){ // set up array to be filled
+      usagePerHour.push({
+        average: 0,
+        min: 1023,
+        max: 0,
+        intervals: 0
+      });
+    }
+
+    closedIntervals.forEach(function (interval) {
+      usagePerHour[interval.from.getHours()].average += interval.duration;
+      usagePerHour[interval.from.getHours()].intervals ++;
+      if (interval.duration > usagePerHour[interval.from.getHours()].max) {
+        usagePerHour[interval.from.getHours()].max = interval.duration
+      }
+      if (interval.duration < usagePerHour[interval.from.getHours()].min) {
+        usagePerHour[interval.from.getHours()].min = interval.duration
+      }
+    });
+
+    usagePerHour.forEach(function (hour) {
+      hour.average = hour.average / hour.intervals;
+    });
+
+    cb({am: usagePerHour.slice(12), pm: usagePerHour.slice(-12)});
+  }
+
+  var computeUsagePerDay = function(toilet, cb) {
+    let closedIntervals = toilet.closedIntervals;
+    let stamps = toilet.distinctDays;
+    let usagePerDay = new Array();
+
+    stamps.forEach(function(stamp){ // set up array to be filled
+      usagePerDay.push({
+        timestamp: stamp,
+        average: 0,
+        min: 1023,
+        max: 0,
+        intervals: 0});
+    });
+
+    closedIntervals.forEach(function(interval){
+      usagePerDay.forEach(function(day){
+        if (day.timestamp == interval.from.toDateString()) {
+          day.average += interval.duration;
+          day.intervals ++;
+          if (interval.duration > day.max) {day.max = interval.duration}
+          if (interval.duration < day.min) {day.min = interval.duration}
+        }
+      });
+    });
+
+    usagePerDay.forEach(function(day){
+      let average = day.average / day.intervals;
+      day.average = average;
+    })
+    cb(usagePerDay);
+  }
+
+  var computeUsagePerMonthPerDay = function(toilet, cb) {
+    let closedIntervals = toilet.closedIntervals;
+    let stamps = toilet.distinctMonths;
+    let usagePerDay = toilet.usagePerDay;
+    let usagePerMonthPerDay = new Array();
+
+    stamps.forEach(function(stamp){ // set up array to be filled
+      usagePerMonthPerDay.push({
+        timestamp: stamp,
+        average: 0,
+        min: 0,
+        max: 1023,
+        intervals: 0,
+        days: new Array()
+      });
+    });
+
+    closedIntervals.forEach(function(interval){
+      let dateArray = interval.from.toDateString().split(" ");
+      let monthString = dateArray[1] + " " + dateArray[3];
+
+      usagePerMonthPerDay.forEach(function(month){
+        if (month.timestamp == monthString) {
+          month.average += interval.duration;
+          month.intervals ++;
+          if (interval.duration > month.max) {month.max = interval.duration}
+          if (interval.duration < month.min) {month.min = interval.duration}
+        }
+      });
+    });
+
+    usagePerMonthPerDay.forEach(function(month){
+      let average = month.average / month.intervals;
+      month.average = average;
+
+      usagePerDay.forEach(function(day){
+        let dateArray = day.timestamp.split(" ");
+        let monthString = dateArray[1] + " " + dateArray[3];
+        if (month.timestamp == monthString) { month.days.push(day) }
+      })
+    });
+    cb(usagePerMonthPerDay)
+  }
+
+    var computeClosedOpenRatio = function(toilet, cb) {
+      let totalOpen = toilet.totalUsage.duration.open;
+      let totalClosed = toilet.totalUsage.duration.closed;
+      let total = toilet.totalUsage.duration.total;
+
       let result = {openPercentage: 0, closedPercentage: 0}
-      for(i = 0; i < open.length; i++) {
-        totalOpen += open[i].duration;
-      }
-      for(i = 0; i < closed.length; i++) {
-        totalClosed += closed[i].duration;
-      }
-      let total = (totalClosed + totalOpen);
-      result.openPercentage = Math.floor((totalOpen / total)*100);
-      result.closedPercentage = Math.ceil((totalClosed / total)*100);
+
+      result.openPercentage = Math.floor((totalOpen / total)*10000)/100;
+      result.closedPercentage = Math.ceil((totalClosed / total)*10000)/100;
 
       cb(result);
     }
@@ -166,58 +354,49 @@
 
     var computeDistinctDays = function(data, cb) {
       let stamps = new Array();
-      for(i = 0; i < data.length; i++) {
-        let date = new Date(Date.parse(data[i].timestamp))
+      data.forEach(function(item){
+        let date = new Date(Date.parse(item.timestamp))
         stamps.push(date.toDateString());
-      }
+      });
       stamps = stamps.filter(onlyUnique);
       cb(stamps);
     }
 
-    var computeAverageClosedIntervalDurationPerDay = function(toilet, cb) {
-      let closedIntervals = toilet.closedIntervals;
-      let stamps = toilet.distinctDays;
-      let averageClosedIntervalsPerDay = new Array();
-
-
-      for (var i = 0; i < stamps.length; i++) // set up array to be filled
-        averageClosedIntervalsPerDay.push({timestamp: null, average: 0, intervals: 0});
-
-      for(i = 0; i < closedIntervals.length; i++) {
-        for(j = 0; j < stamps.length; j++) {
-          if (stamps[j] == closedIntervals[i].from.toDateString()) {
-            averageClosedIntervalsPerDay[j].timestamp = stamps[j];
-            averageClosedIntervalsPerDay[j].average += closedIntervals[i].duration;
-            averageClosedIntervalsPerDay[j].intervals ++;
-          }
-        }
-      }
-      for(i = 0; i < averageClosedIntervalsPerDay.length; i++) {
-        let average = averageClosedIntervalsPerDay[i].average / averageClosedIntervalsPerDay[i].intervals;
-        averageClosedIntervalsPerDay[i].average = average;
-      }
-      cb(averageClosedIntervalsPerDay);
+    var computeDistinctMonths = function(data, cb) {
+      let stamps = new Array();
+      data.forEach(function(item){
+        let date = new Date(Date.parse(item.timestamp))
+        let dateArray = date.toDateString().split(" ")
+        stamps.push(dateArray[1] + " " + dateArray[3]);
+      });
+      stamps = stamps.filter(onlyUnique);
+      cb(stamps);
     }
 
-    var computeIntervals = function(data, closed, cb) {
-      let intervals = new Array();
-      let lastTime = null;
+    var computeTotalUsage = function (toilet, cb) {
 
-      for(i = 0; i < data.length; i++) {
-        if (closed == (data[i].open == 0)) { // Boolean to use Function to compute both Interval types
-          lastTime = data[i].timestamp;
-        } else if (lastTime) {
-          let item = {from: lastTime, duration:((data[i].timestamp - lastTime) / 1000)};
-          if (item.duration > 0){
-            if (closed){
-              if (1800 > item.duration) intervals.push(item); //More Crapdata Elimination
-            } else {
-              intervals.push(item);
-            }
-          }
-        }
+      let totalUsage = {
+        duration: {open: 0, closed: 0, total: 0},
+        average: {open: 0, closed: 0},
+        intervals: {
+          open: toilet.openIntervals.length,
+          closed: toilet.closedIntervals.length,
+          total: toilet.openIntervals.length + toilet.closedIntervals.length
+        },
       }
-      cb(intervals);
+
+      toilet.openIntervals.forEach(function(interval){
+        totalUsage.duration.open += interval.duration;
+      })
+      toilet.closedIntervals.forEach(function(interval){
+        totalUsage.duration.closed += interval.duration;
+      })
+      totalUsage.duration.total = totalUsage.duration.closed + totalUsage.duration.open;
+
+      totalUsage.average.open = totalUsage.duration.open / totalUsage.intervals.open;
+      totalUsage.average.closed = totalUsage.duration.closed / totalUsage.intervals.closed;
+
+      cb(totalUsage);
     }
 
     var compileDataForComputation = function(db, cb) {
@@ -233,6 +412,8 @@
           toiletEvents: result,
           openIntervals: new Array(),
           closedIntervals: new Array(),
+          totalUsage: null,
+          usagePerDay: new Array(),
           distinctDays: new Array(),
           distinctMonths: new Array()
         }
@@ -250,18 +431,73 @@
               toilet.distinctDays = days;
               computeDistinctMonths(toilet.toiletEvents, function (months) {
                 toilet.distinctMonths = months;
-                cb(toilet);
-              })
+                computeUsagePerDay(toilet, function(usagePerDay){
+                  toilet.usagePerDay = usagePerDay;
+                  computeTotalUsage(toilet, function(totalUsage){
+                    toilet.totalUsage = totalUsage;
+                    cb(toilet);
+                  });
+                });
+              });
             });
           });
         });
       });
     }
 
-    var compileDataJson = function (db, cb) {
+    var newComputationCallbackChain = function(db, data, cb) {
+
+      compileDataForComputation(db, function(toilet) {
+        data.total.events = { open: toilet.openIntervals.slice(-100), closed: toilet.closedIntervals.slice(-100) };
+        data.total.average = toilet.totalUsage.average;
+        data.total.duration = toilet.totalUsage.duration;
+        data.total.intervals = toilet.totalUsage.intervals;
+
+        getLastEvent(db, function(lastDbEvent) {
+          data.lastEvent = lastDbEvent;
+          computeClosedOpenRatio(toilet, function(closedOpenRatio) {
+            data.total.closedOpenRatio = closedOpenRatio;
+            computeEstimatedWaterUsage(toilet, function(estWasterUsg) {
+              data.total.waterUsage = estWasterUsg;
+              computeRollAndTreeUsage(toilet, function(estimatedRollUsage, estimatedTreeMurder) {
+                data.total.toiletPaperUsage = estimatedRollUsage;
+                data.total.treesKilled = estimatedTreeMurder;
+                computeUsagePerMonthPerDay(toilet, function(usagePerMonthPerDay){
+                  data.usagePerMonthPerDay = usagePerMonthPerDay;
+                  computeUsagePerHour(toilet, function(usagePerHour){
+                    data.usagePerHour = usagePerHour;
+                    computeUsagePerWeekday(toilet, function(usagePerWeekday){
+                      data.usagePerWeekday = usagePerWeekday;
+                      cb(data);
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+
+    }
+
+    var compileDataJson = function(db, cb) {
       let data = {
         name: "FullObject",
         lastEvent: null,
+        total: {
+          intervals: null,
+          average: null,
+          duration: null,
+          closedOpenRatio: null,
+          waterUsage:  null,
+          toiletPaperUsage: null,
+          treesKilled: null,
+          events: null
+        },
+        usagePerMonthPerDay: null,
+        usagePerHour: null,
+        usagePerWeekday: null,
+        //legacy
         closedOpenRatio: null,
         averageClosedDurationPerDay: null,
         averageClosedDurationPerHour: null,
@@ -277,37 +513,11 @@
       }
 
       // Computation Callback Chain
-      compileDataForComputation(db, function(toilet) {
-        getLastEvent(db, function(lastDbEvent) {
-          data.lastEvent = lastDbEvent;
-          computeClosedOpenRatio(toilet, function(closedOpenRatio) {
-            data.closedOpenRatio = closedOpenRatio;
-            computeAverageClosedIntervalDurationPerDay(toilet, function(avgDursPerDay) {
-              data.averageClosedDurationPerDay = avgDursPerDay;
-              computeAverageClosedIntervalDurationPerHour(toilet, function(avgDursPerHour) {
-                data.averageClosedDurationPerHour = avgDursPerHour;
-                computeAverageClosedIntervalDurationPerWeekday(toilet, function(avgDursPerWeekday) {
-                  data.averageClosedDurationPerWeekday = avgDursPerWeekday;
-                  computeAverageClosedIntervalDurationPerMonth(toilet, function(avgDursPerMonth) {
-                    data.averageClosedDurationPerMonth = avgDursPerMonth;
-                    computeIntervalÁnalytics(toilet, function(totalIntervals, averageIntervalsPerHour, averageIntervalsPerWeekday) {
-                      data.totalIntervals = totalIntervals;
-                      data.averageIntervalsPerHour = averageIntervalsPerHour;
-                      data.averageIntervalsPerWeekday = averageIntervalsPerWeekday;
-                      computeEstimatedWaterUsage(toilet, function(estWasterUsg) {
-                        data.estimatedWaterUsage = estWasterUsg;
-                        computeRollAndTreeUsage(toilet, function(estimatedRollUsage, estimatedTreeMurder) {
-                          data.estimatedRollsOfToiletpaperUsed = estimatedRollUsage;
-                          data.estimatedTreesKilled = estimatedTreeMurder;
-                          cb(JSON.stringify(data));
-                        });
-                      });
-                    });
-                  });
-                });
-              });
-            });
-          });
+      legacyComputationCallbackChain(db, data, function(legData){
+        data = legData;
+        newComputationCallbackChain(db, data, function(newData){
+          data = newData;
+          cb(JSON.stringify(data));
         });
       });
     }

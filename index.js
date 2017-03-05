@@ -18,8 +18,8 @@ const options = {
   cert: fs.readFileSync(certPath)
 }
 
-const server = https.createServer(options, eps).listen(8000);
-const ews = require('express-ws')(eps, server);
+const httpsServer = https.createServer(options, eps).listen(8000);
+const ews = require('express-ws')(eps, httpsServer);
 const app = ews.app;
 
 //Cruncher

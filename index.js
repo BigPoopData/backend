@@ -28,7 +28,7 @@ const cruncher = new dc();
 
 var connections = new Array();
 
-function handleWsMessage(msg, ws){
+function handleWsMessage(msg, ws) {
   switch (msg) {
     case "setup":
       console.log("Sending Setup Object");

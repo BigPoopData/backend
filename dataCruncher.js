@@ -7,7 +7,6 @@
 
 (function() {
 
-
       var legacyComputationCallbackChain = function(db, data, cb) {
 
         compileDataForComputation(db, function(toilet) {
@@ -256,7 +255,7 @@
       hour.average = hour.average / hour.intervals;
     });
 
-    cb({am: usagePerHour.slice(12), pm: usagePerHour.slice(-12)});
+    cb({am: usagePerHour.slice(0, 11), pm: usagePerHour.slice(12, 23)});
   }
 
   var computeUsagePerDay = function(toilet, cb) {

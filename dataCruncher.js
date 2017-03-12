@@ -496,6 +496,13 @@
         usagePerMonthPerDay: null,
         usagePerHour: null,
         usagePerWeekday: null,
+        quotes: [
+          {quote: "No system of mass surveillance has existed in any society that we know of to this point that has not been abused!", author:"Edward Snowden"},
+          {quote: "Arguing that you don't care about the right to privacy because you have nothing to hide is no different than saying you don't care about free speech because you have nothing to say.", author:"Edward Snowden"},
+          {quote: "Destruction of privacy via surveillance programs engineered by Great Powers widens the existing power imbalance between the ruling elite and everyone else. Its impact on global south will be colossal.", author:"Arzak Khan"},
+          {quote: "Every man should know that his conversations, his correspondence, and his personal life are private.", author:"Lyndon B. Johnson (President of the United States, 1963-69)"},
+          {quote: "You can't assume any place you go is private because the means of surveillace are becoming so affordable and so invisible", author:"Howard Rheingold"}
+        ],
         //legacy
         closedOpenRatio: null,
         averageClosedDurationPerDay: null,

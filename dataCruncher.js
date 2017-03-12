@@ -513,7 +513,7 @@
         averageIntervalsPerHour: null,
         averageIntervalsPerWeekday: null,
         bigSmallRatio: null, //TODO
-        estimatedWaterUsage: null, //TODO
+        estimatedWaterUsage: null,
         estimatedRollsOfToiletpaperUsed: null,
         estimatedTreesKilled: null,
       }

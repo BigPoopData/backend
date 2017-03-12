@@ -54,8 +54,12 @@ this.waitForConnection = function(callback, interval) {
 //callback of response
 this.send("setup", function() {
     console.log('server is up');
-    $(".se-pre-con").css("background-image", "url(img/loading_finish.gif)");
+    neededData.serverup = true;
+    //  $(".se-pre-con").css("background-image", "url(img/loading_finish.gif)");
   });
+
+
+
 
 //executes on message from ws
 getData.onmessage = function(msg) {
@@ -133,7 +137,7 @@ getData.onmessage = function(msg) {
 
     setTimerDurationElapsed(neededData.timedurationelapsed);
 
-    console.log(serverData);
+    // console.log(serverData);
 
     switch (neededData.currentstatus) {
         case "true":

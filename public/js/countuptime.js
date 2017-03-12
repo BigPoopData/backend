@@ -6,7 +6,7 @@ var sec = 'getting data';
 
 function setTimerDurationElapsed(timeintevalarg) {
     sec = timeintevalarg;
-    console.log("sec changed --> " + sec);
+    // console.log("sec changed --> " + sec);
 }
 
 function pad(val) {
@@ -53,7 +53,7 @@ setInterval(function() {
                 break;
         }
 
-    } else if (!neededData.currentstatus) {
+    } else if (neededData.currentstatus === false){
         switch (true) {
             case (sec > 500):
                 $(".statusmessage").text('Really taking his/her time!');

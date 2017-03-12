@@ -203,7 +203,7 @@ getData.onmessage = function(msg) {
     });
 
     //fadeout loading animation on load finish
-    $(".se-pre-con").fadeOut("slow");
+    $(".se-pre-con2").fadeOut("slow");
 
     $('#main-content').fadeIn("slow");
 

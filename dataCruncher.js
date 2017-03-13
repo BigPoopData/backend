@@ -255,7 +255,7 @@
       hour.average = hour.average / hour.intervals;
     });
 
-    cb({am: usagePerHour.slice(0, 12), pm: usagePerHour.slice(12, 24)});
+    cb({pm: usagePerHour.slice(0, 12), am: usagePerHour.slice(12, 24)});
   }
 
   var computeUsagePerDay = function(toilet, cb) {

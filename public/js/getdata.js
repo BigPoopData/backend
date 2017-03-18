@@ -18,12 +18,12 @@ colorObject.alphaDown = '0.4)';
 
 var PRODUCTION_READY = true;
 
-if (!PRODUCTION_READY) {
-    serverData.websocketurl = "wss://bigpoopdata.com/ws";
-} else {
+// if (!PRODUCTION_READY) {
+//     serverData.websocketurl = "wss://bigpoopdata.com/ws";
+// } else {
     serverData.websocketurl = origin.replace(/^(https?):\/\//, "wss://") + "/ws";
 
-}
+// }
 //connect to websocket
 var getData = new WebSocket(serverData.websocketurl);
 
@@ -102,9 +102,12 @@ getData.onmessage = function(msg) {
             neededData.quotesAuthorArray = _.map(serverData.quotes, "author");
 
 
-            neededData.averagesPerMonthTimestamps = _.map(neededData.averagesPerMonthObject, 'timestamp');
-            neededData.averagesPerMonthData = _.map(neededData.averagesPerMonthObject, roundToMilliseconds);
-            neededData.intervalsPerMonthData = _.map(neededData.averagesPerMonthObject, 'intervals');
+            neededData.averagesPerMonthTimestamps =
+            _.map(neededData.averagesPerMonthObject, 'timestamp');
+            neededData.averagesPerMonthData =
+            _.map(neededData.averagesPerMonthObject, roundToMilliseconds);
+            neededData.intervalsPerMonthData =
+            _.map(neededData.averagesPerMonthObject, 'intervals');
 
             neededData.averagesPerDayTimestamps = _.map(neededData.averagesPerDayObject, 'timestamp');
             neededData.averagesPerDayData = _.map(neededData.averagesPerDayObject, roundToMilliseconds);
@@ -196,7 +199,7 @@ getData.onmessage = function(msg) {
             $('.underline').css("background-color", colorObject.currentColorLessOpacity);
             $('.currentbackgroundcolorfull').css("background-color", colorObject.currentColor);
             $('.currentbackgroundcolor').css("background-color", colorObject.currentColorLessOpacity);
-            $('.currentcolor').css("color", colorObject.currentColorLessOpacity);
+            $('.currentcolor').css("color", colorObject.currentColor);
     }
 
     $('.amcolorbox').css("background-color", colorObject.strongChartColor);

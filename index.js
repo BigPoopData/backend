@@ -31,8 +31,8 @@ var connections = new Array();
 function handleWsMessage(msg, ws) {
   switch (msg) {
     case "setup":
-      console.log("Sending Setup Object");
-      cruncher.compileDataJson(db, function(dataString) {
+      console.log("Sending Setup Object to: " + ws.upgradeReq.connection.remoteAddress);
+      cruncher.compileDataJson(db, "sitzklo", function(dataString) {
         if (ws.readyState == ws.OPEN){ ws.send(dataString) }
       });
       break;
@@ -69,7 +69,7 @@ app.ws('/ws', function(ws, req) {
     handleWsMessage(msg, ws);
   });
   connections.push(ws)
-  console.log("New Websocket Connection");
+  console.log("Client Connected from: " + ws.upgradeReq.connection.remoteAddress);
 });
 
 app.get('/:klo/open/:status', function(req, res, next){

@@ -7,10 +7,10 @@
 
 (function() {
 
-      var legacyComputationCallbackChain = function(db, data, cb) {
+      var legacyComputationCallbackChain = function(db, data, kloName, cb) {
 
-        compileDataForComputation(db, function(toilet) {
-          getLastEvent(db, function(lastDbEvent) {
+        compileDataForComputation(db, kloName, function(toilet) {
+          getLastEvent(db, kloName, function(lastDbEvent) {
             data.lastEvent = lastDbEvent;
             computeClosedOpenRatio(toilet, function(closedOpenRatio) {
               data.closedOpenRatio = closedOpenRatio;
@@ -125,14 +125,6 @@
       averageClosedIntervalsPerMonth[i].average = average;
     }
     cb(averageClosedIntervalsPerMonth);
-  }
-
-  var getLastEvent = function(db, cb) {
-    db.get(`SELECT * FROM sitzklo_current;`, function(err, lastDbEvent) {
-      if (err) console.log(err);
-      lastDbEvent.timestamp = new Date(Date.parse(lastDbEvent.timestamp));
-      cb(lastDbEvent);
-    });
   }
 
   var computeIntervalÁnalytics = function(toilet, cb) {
@@ -398,9 +390,17 @@
       cb(totalUsage);
     }
 
-    var compileDataForComputation = function(db, cb) {
+    var getLastEvent = function(db, kloName, cb) {
+      db.get(`SELECT * FROM ${kloName}_current;`, function(err, lastDbEvent) {
+        if (err) console.log(err);
+        lastDbEvent.timestamp = new Date(Date.parse(lastDbEvent.timestamp));
+        cb(lastDbEvent);
+      });
+    }
+
+    var compileDataForComputation = function(db, kloName, cb) {
       let result = new Array();
-      db.each(`SELECT * FROM sitzklo_log ORDER BY datetime("timestamp");`, function(err, row) {
+      db.each(`SELECT * FROM ${kloName}_log ORDER BY datetime("timestamp");`, function(err, row) {
         //console.log(err);
         row.timestamp = new Date(Date.parse(row.timestamp));
         //console.log(row);
@@ -416,12 +416,12 @@
           distinctDays: new Array(),
           distinctMonths: new Array()
         }
-        db.each(`SELECT * FROM sitzklo_closed_intervals ORDER BY datetime([from]);`, function(err, row) {
+        db.each(`SELECT * FROM ${kloName}_closed_intervals ORDER BY datetime([from]);`, function(err, row) {
           row.from = new Date(Date.parse(row.from));
           toilet.closedIntervals.push(row);
         }, function (err, numRows) {
-          if (err) console.log(err);
-          db.each(`SELECT * FROM sitzklo_open_intervals ORDER BY datetime([from]);`, function(err, row) {
+          if (err) console.log(err.message());
+          db.each(`SELECT * FROM ${kloName}_open_intervals ORDER BY datetime([from]);`, function(err, row) {
             row.from = new Date(Date.parse(row.from));
             toilet.openIntervals.push(row);
           },function (err, numRows) {
@@ -444,15 +444,15 @@
       });
     }
 
-    var newComputationCallbackChain = function(db, data, cb) {
+    var newComputationCallbackChain = function(db, data, kloName, cb) {
 
-      compileDataForComputation(db, function(toilet) {
+      compileDataForComputation(db, kloName, function(toilet) {
         data.total.events = { open: toilet.openIntervals.slice(-100), closed: toilet.closedIntervals.slice(-100) };
         data.total.average = toilet.totalUsage.average;
         data.total.duration = toilet.totalUsage.duration;
         data.total.intervals = toilet.totalUsage.intervals;
 
-        getLastEvent(db, function(lastDbEvent) {
+        getLastEvent(db, kloName, function(lastDbEvent) {
           data.lastEvent = lastDbEvent;
           computeClosedOpenRatio(toilet, function(closedOpenRatio) {
             data.total.closedOpenRatio = closedOpenRatio;
@@ -479,7 +479,7 @@
 
     }
 
-    var compileDataJson = function(db, cb) {
+    var compileDataJson = function(db, kloName, cb) {
       let data = {
         name: "FullObject",
         lastEvent: null,
@@ -501,7 +501,8 @@
           {quote: "Arguing that you don't care about the right to privacy because you have nothing to hide is no different than saying you don't care about free speech because you have nothing to say.", author:"Edward Snowden"},
           {quote: "Destruction of privacy via surveillance programs engineered by Great Powers widens the existing power imbalance between the ruling elite and everyone else. Its impact on global south will be colossal.", author:"Arzak Khan"},
           {quote: "Every man should know that his conversations, his correspondence, and his personal life are private.", author:"Lyndon B. Johnson (President of the United States, 1963-69)"},
-          {quote: "You can't assume any place you go is private because the means of surveillace are becoming so affordable and so invisible", author:"Howard Rheingold"}
+          {quote: "You can't assume any place you go is private because the means of surveillace are becoming so affordable and so invisible", author:"Howard Rheingold"},
+          {quote: "Jeder schas wird überwacht!", author:"Jonny"}
         ],
         //legacy
         closedOpenRatio: null,
@@ -519,9 +520,9 @@
       }
 
       // Computation Callback Chain
-      legacyComputationCallbackChain(db, data, function(legData){
+      legacyComputationCallbackChain(db, data, kloName, function(legData){
         data = legData;
-        newComputationCallbackChain(db, data, function(newData){
+        newComputationCallbackChain(db, data, kloName, function(newData){
           data = newData;
           cb(JSON.stringify(data));
         });
@@ -530,31 +531,31 @@
 
 
     var processToiletEvent = function(event, db) {
-      getLastEvent(db, function (lastEvent){
+      getLastEvent(db, event.name, function (lastEvent){
         console.log(lastEvent);
         if (lastEvent.timestamp != null){
           let newInterval = {from: lastEvent.timestamp.toString().slice(0,24), duration: ((event.timestamp - lastEvent.timestamp) / 1000)}
           console.log(event);
           if ((lastEvent.open == "true") && (event.open != "true")) {
-            db.run(`UPDATE sitzklo_current
+            db.run(`UPDATE ${event.name}_current
                     SET timestamp = $1, open = $2
                     WHERE (id = 0)`, [event.timestamp.toString().slice(0,24), event.open]);
             console.log("Updated Last Event");
             if ((60 * 60 * 24) > newInterval.duration > 0) { // If Open Interval longer than one day, throw Interval away
-              db.run(`INSERT INTO sitzklo_open_intervals ([from], duration) VALUES($1, $2);`, [newInterval.from, newInterval.duration]);
-              db.run(`INSERT INTO sitzklo_log (timestamp, open) VALUES($1, $2);`, [event.timestamp.toString().slice(0,24), event.open]);
+              db.run(`INSERT INTO ${event.name}_open_intervals ([from], duration) VALUES($1, $2);`, [newInterval.from, newInterval.duration]);
+              db.run(`INSERT INTO ${event.name}_log (timestamp, open) VALUES($1, $2);`, [event.timestamp.toString().slice(0,24), event.open]);
               console.log("Inserted Interval:" + JSON.stringify(newInterval));
 
             }
           } else if((lastEvent.open == "false" ) && (event.open != "false")) {
-            db.run(`UPDATE sitzklo_current
+            db.run(`UPDATE ${event.name}_current
                     SET timestamp = $1, open = $2
                     WHERE (id = 0)`, [event.timestamp.toString().slice(0,24), event.open]);
             console.log("Updated Last Event");
             if (1800 > newInterval.duration > 0){ // If Closed Interval longer than one 50 minutes, throw Interval away, nobody will shit that long
-              db.run(`INSERT INTO sitzklo_closed_intervals ([from], duration) VALUES($1, $2);`, [newInterval.from, newInterval.duration]);
-              db.run(`INSERT INTO sitzklo_log (timestamp, open) VALUES($1, $2);`, [event.timestamp.toString().slice(0,24), event.open]);
-              console.log("Inserted Interval:" + JSON.stringify(newInterval));
+              db.run(`INSERT INTO ${event.name}_closed_intervals ([from], duration) VALUES($1, $2);`, [newInterval.from, newInterval.duration]);
+              db.run(`INSERT INTO ${event.name}_log (timestamp, open) VALUES($1, $2);`, [event.timestamp.toString().slice(0,24), event.open]);
+              console.log("Inserted Interval: Klo: " + event.name + " | " + JSON.stringify(newInterval));
             }
           }
         }

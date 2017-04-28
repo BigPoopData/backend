@@ -29,10 +29,11 @@ const cruncher = new dc();
 var connections = new Array();
 
 function handleWsMessage(msg, ws) {
-  switch (msg) {
+  let parMsg = JSON.parse(msg);
+  switch (parMsg.command) {
     case "setup":
       console.log("Sending Setup Object to: " + ws.upgradeReq.connection.remoteAddress);
-      cruncher.compileDataJson(db, "sitzklo", function(dataString) {
+      cruncher.compileDataJson(db, parMsg.kloName, function(dataString) {
         if (ws.readyState == ws.OPEN){ ws.send(dataString) }
       });
       break;

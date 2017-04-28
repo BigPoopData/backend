@@ -392,7 +392,7 @@
 
     var getLastEvent = function(db, kloName, cb) {
       db.get(`SELECT * FROM ${kloName}_current;`, function(err, lastDbEvent) {
-        if (err) console.log(err);
+        if (err) console.log("Table for " + kloName + " doesn't exist");
         lastDbEvent.timestamp = new Date(Date.parse(lastDbEvent.timestamp));
         cb(lastDbEvent);
       });

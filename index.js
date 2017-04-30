@@ -12,10 +12,12 @@ const https = require('https');
 
 const keyPath = './../creds/key.pem';
 const certPath = './../creds/cert.pem';
+const chainPath = './../creds/chain.pem'
 
 const options = {
   key: fs.readFileSync(keyPath),
-  cert: fs.readFileSync(certPath)
+  cert: fs.readFileSync(certPath),
+  ca: fs.readFileSync(chainPath)
 }
 
 const httpsServer = https.createServer(options, eps).listen(8000);

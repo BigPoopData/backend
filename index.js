@@ -9,6 +9,7 @@ const db = new sqlite3.Database('./toilet.db');
 const express = require('express');
 const eps = express();
 const https = require('https');
+const hsts = require('hsts');
 
 const keyPath = './../creds/key.pem';
 const certPath = './../creds/cert.pem';
@@ -57,6 +58,13 @@ function broadcastWsMessage(msg) {
 }
 
 //Express
+
+app.use(hsts({
+  maxAge: 15552000,        // Must be at least 18 weeks to be approved by Google
+  includeSubDomains: true, // Must be enabled to be approved by Google
+  preload: true
+}))
+
 app.use(function(req, res, next) {
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
         res.setHeader("Pragma", "no-cache"); // HTTP 1.0.

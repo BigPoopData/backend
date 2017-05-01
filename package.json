@@ -16,6 +16,7 @@
     "body-parser": "^1.16.0",
     "path": "^0.12.7",
     "https": "^1.0.0",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "hsts": "2.0.0"
   }
 }

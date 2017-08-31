@@ -11,18 +11,7 @@ const eps = express();
 const https = require('https');
 const hsts = require('hsts');
 
-const keyPath = './../creds/key.pem';
-const certPath = './../creds/cert.pem';
-const chainPath = './../creds/chain.pem'
-
-const options = {
-  key: fs.readFileSync(keyPath),
-  cert: fs.readFileSync(certPath),
-  ca: fs.readFileSync(chainPath)
-}
-
-const httpsServer = https.createServer(options, eps).listen(8000);
-const ews = require('express-ws')(eps, httpsServer);
+const ews = require('express-ws')(eps);
 const app = ews.app;
 
 //Cruncher
@@ -58,13 +47,6 @@ function broadcastWsMessage(msg) {
 }
 
 //Express
-
-app.use(hsts({
-  maxAge: 15552000,        // Must be at least 18 weeks to be approved by Google
-  includeSubDomains: true, // Must be enabled to be approved by Google
-  preload: true
-}))
-
 app.use(function(req, res, next) {
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
         res.setHeader("Pragma", "no-cache"); // HTTP 1.0.

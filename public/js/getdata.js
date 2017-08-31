@@ -21,7 +21,7 @@ var PRODUCTION_READY = true;
 if (!PRODUCTION_READY) {
     serverData.websocketurl = "wss://bigpoopdata.com/ws";
 } else {
-    serverData.websocketurl = origin.replace(/^(https?):\/\//, "wss://") + "/ws";
+    serverData.websocketurl = origin.replace(/^(https?):\/\//, "ws://") + "/ws";
 
 }
 //connect to websocket

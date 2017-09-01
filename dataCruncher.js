@@ -504,29 +504,16 @@
           {quote: "You can't assume any place you go is private because the means of surveillace are becoming so affordable and so invisible", author:"Howard Rheingold"},
           {quote: "Jeder schas wird überwacht!", author:"Jonny"}
         ],
-        //legacy
-        closedOpenRatio: null,
-        averageClosedDurationPerDay: null,
-        averageClosedDurationPerHour: null,
-        averageClosedDurationPerWeekday: null,
-        averageClosedDurationPerMonth: null,
-        totalIntervals: null,
-        averageIntervalsPerHour: null,
-        averageIntervalsPerWeekday: null,
-        bigSmallRatio: null, //TODO
-        estimatedWaterUsage: null,
-        estimatedRollsOfToiletpaperUsed: null,
-        estimatedTreesKilled: null,
       }
 
       // Computation Callback Chain
-      legacyComputationCallbackChain(db, data, kloName, function(legData){
-        data = legData;
-        newComputationCallbackChain(db, data, kloName, function(newData){
-          data = newData;
-          cb(JSON.stringify(data));
-        });
+      //legacyComputationCallbackChain(db, data, kloName, function(legData){
+      //  data = legData;
+      newComputationCallbackChain(db, data, kloName, function(newData){
+        data = newData;
+        cb(JSON.stringify(data));
       });
+      //});
     }
 
 

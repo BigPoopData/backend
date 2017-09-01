@@ -125,8 +125,8 @@ function universalGraph(chartType, elementHTML, xAxis, yAxis, tooltipMessage, ch
                             activeElementGraphData.y.push(lowerLevelGraphY[l]);
                         }
                     }
-
                     graph.destroy();
+                    graph = undefined
 
                     graph = universalGraph('bar', elementHTML, activeElementGraphData.x, activeElementGraphData.y, tooltipMessage, colorObject.currentColorLessOpacity, false, colorObject.currentColorLessOpacity, "easeInOutExpo", lowerLevelGraphX, lowerLevelGraphY);
 
@@ -168,6 +168,7 @@ function universalGraph(chartType, elementHTML, xAxis, yAxis, tooltipMessage, ch
 
     $(graphmenu).click(function() {
         graph.destroy();
+        graph = undefined
         graph = universalGraph(chartType, elementHTML, xAxis, yAxis, tooltipMessage, chartColor, chartHoverActive, chartHoverColor, animationEasing, lowerLevelGraphX, lowerLevelGraphY, graphmenu);
         $(graphmenu).fadeOut('slow');
     });

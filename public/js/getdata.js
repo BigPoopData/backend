@@ -61,8 +61,8 @@ getData.onmessage = function(msg) {
     serverData = JSON.parse(msg.data);
     switch (serverData.name) {
         case "FullObject":
-            neededData.averagesPerDayObject = serverData.averageClosedDurationPerDay;
-            neededData.averagesPerMonthObject = serverData.averageClosedDurationPerMonth;
+            neededData.averagesPerDayObject = _.flatMap(serverData.usagePerMonthPerDay, 'days');
+            neededData.averagesPerMonthObject = serverData.usagePerMonthPerDay;
 
             neededData.averagesPerMonthTimestamps = [];
             neededData.averagesPerMonthData = [];
@@ -107,10 +107,10 @@ getData.onmessage = function(msg) {
             neededData.averagesPerDayData = _.map(neededData.averagesPerDayObject, roundToMilliseconds);
             neededData.intervalsPerDayData = _.map(neededData.averagesPerDayObject, 'intervals');
 
-            neededData.closedPercentage = serverData.closedOpenRatio.closedPercentage;
-            neededData.openPercentage = serverData.closedOpenRatio.openPercentage;
-            neededData.openPercentageGraphValue = 220 * serverData.closedOpenRatio.openPercentage / 100;
-            neededData.closedPercentageGraphValue = 220 * serverData.closedOpenRatio.closedPercentage / 100;
+            neededData.closedPercentage = serverData.total.closedOpenRatio.closedPercentage;
+            neededData.openPercentage = serverData.total.closedOpenRatio.openPercentage;
+            neededData.openPercentageGraphValue = 220 * serverData.total.closedOpenRatio.openPercentage / 100;
+            neededData.closedPercentageGraphValue = 220 * serverData.total.closedOpenRatio.closedPercentage / 100;
             neededData.currentstatus = serverData.lastEvent.open;
             neededData.datetimestamp = Date.parse(serverData.lastEvent.timestamp);
             var daterightnow = new Date();
@@ -124,7 +124,7 @@ getData.onmessage = function(msg) {
 
             console.log(serverData);
 
-            waterusage = serverData.totalIntervals * 9;
+            waterusage = serverData.total.waterUsage.value;
             paperusage = Math.floor(serverData.total.toiletPaperUsage.value * 100) / 100;
 
 
